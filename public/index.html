@@ -14,6 +14,18 @@
   <body>
     <div id="content"></div>
     <script type="text/babel">
+      var Comment = React.createClass({
+        render: function() {
+          return (
+            <div className="comment">
+              <h2 className="commentAuthor">
+                {this.props.author}
+              </h2>
+              {this.props.children}
+            </div>
+          );
+        }
+      });
       var CommentBox = React.createClass({
         loadCommentsFromServer: function() {
           $.ajax({
@@ -53,8 +65,8 @@
           return (
             <div className="commentBox">
               <h1>Comments</h1>
-                <CommentList data={this.state.data} />
-                <CommentForm onCommentSubmit={this.handleCommentSubmit} /> 
+              <CommentList data={this.state.data} />
+              <CommentForm onCommentSubmit={this.handleCommentSubmit} />
             </div>
           );
         }
@@ -76,26 +88,26 @@
         }
       });
       var CommentForm = React.createClass({
+        getInitialState: function() {
+          return {author: '', text: ''};
+        },
+        handleAuthorChange: function(e) {
+          this.setState({author: e.target.value});
+        },
+        handleTextChange: function(e) {
+          this.setState({text: e.target.value});
+        },
+        handleSubmit: function(e) {
+          e.preventDefault();
+          var author = this.state.author.trim();
+          var text = this.state.text.trim();
+          if (!text || !author) {
+            return;
+          }
+          this.props.onCommentSubmit({author: author, text: text});
+          this.setState({author: '', text: ''});
+        },
         render: function() {
-          getInitialState: function() {
-            return {author: '', text: ''};
-          },
-          handleAuthorChange: function(e) {
-            this.setState({author: e.target.value});
-          },
-          handleTextChange: function(e) {
-            this.setState({text: e.target.value});
-          },
-          handleSubmit: function(e) {
-            e.preventDefault();
-            var author = this.state.author.trim();
-            var text = this.state.text.trim();
-            if (!text || !author) {
-              return;
-            }
-            this.props.onCommentSubmit({author: author, text: text}); 
-            this.setState({author: '', text: ''});
-          },
           return (
             <form className="commentForm" onSubmit={this.handleSubmit}>
               <input
